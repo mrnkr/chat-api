@@ -54,7 +54,7 @@ export class ChatroomsService {
   }
 
   async sendMessageToChatroom(data: SendMessage): Promise<[Message, Chatroom]> {
-    const chatroom = await this.ChatroomModel.findOne({
+    let chatroom = await this.ChatroomModel.findOne({
       _id: data.chatroomId,
       users: data.senderId,
     } as any);
@@ -67,8 +67,8 @@ export class ChatroomsService {
 
     const message = new Message(data.messageBody, data.senderId);
     chatroom.addMessage(message);
-    await chatroom.save();
+    chatroom = await chatroom.save();
 
-    return [message, chatroom];
+    return [chatroom.lastMessage, chatroom];
   }
 }
