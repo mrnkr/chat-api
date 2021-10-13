@@ -103,8 +103,7 @@ export class ChatroomsResolver {
 
       return (
         chatroom.id === variables.chatroomId &&
-        chatroom.users.some((u) => u.id === context.currentUser) &&
-        (message.sender as any) !== context.currentUser
+        chatroom.users.some((u) => u.id === context.currentUser)
       );
     },
   })
