@@ -65,17 +65,18 @@ export class ChatroomsResolver {
     @Args('input') input: SendMessageDto,
     @CurrentUser() currentUser: User,
   ): Promise<Message> {
-    const [message, chatroom] =
-      await this.chatroomsService.sendMessageToChatroom({
-        chatroomId: input.chatroomId,
-        messageBody: input.messageBody,
-        senderId: currentUser.id,
-      });
+    const chatroom = await this.chatroomsService.sendMessageToChatroom({
+      chatroomId: input.chatroomId,
+      messageBody: input.messageBody,
+      senderId: currentUser.id,
+    });
 
     this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
-    this.pubSub.publish('messageReceived', { messageReceived: message });
+    this.pubSub.publish('messageReceived', {
+      messageReceived: chatroom.lastMessage,
+    });
 
-    return message;
+    return chatroom.lastMessage;
   }
 
   @Subscription((returns) => Chatroom, {
