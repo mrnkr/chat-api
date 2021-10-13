@@ -1,5 +1,5 @@
 import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
-import { modelOptions, prop, Ref } from '@typegoose/typegoose';
+import { isDocumentArray, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import { User } from '../users/user.entity';
 import { useMongoosePlugins } from '../common/useMongoosePlugins';
 import { Message } from './message.entity';
@@ -37,5 +37,14 @@ export class Chatroom {
   addMessage(message: Message): void {
     message.chatroom = this;
     this.messages.push(message);
+  }
+
+  canAccess(userId: string): boolean {
+    if (!isDocumentArray(this.users)) {
+      // deny access if check cannot be performed
+      return false;
+    }
+
+    return this.users.some((u) => u.id === userId);
   }
 }

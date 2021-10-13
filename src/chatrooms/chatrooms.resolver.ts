@@ -85,7 +85,7 @@ export class ChatroomsResolver {
       context: SubscriptionContext,
     ) => {
       const chatroom = payload.chatroomUpdated;
-      return chatroom.users.some((u) => u.id === context.currentUser);
+      return chatroom.canAccess(context.currentUser);
     },
   })
   chatroomUpdated() {
@@ -103,7 +103,7 @@ export class ChatroomsResolver {
 
       return (
         chatroom.id === variables.chatroomId &&
-        chatroom.users.some((u) => u.id === context.currentUser)
+        chatroom.canAccess(context.currentUser)
       );
     },
   })
