@@ -26,10 +26,10 @@ export class ChatroomsService {
 
   private async assertUsersExist(userIds: string[]): Promise<void> {
     await Promise.all(
-      userIds.map(async (uid) => {
-        const user = await this.UserModel.find({ id: { $in: userIds } });
+      userIds.map(async (id) => {
+        const user = await this.UserModel.findOne({ id });
         if (!user) {
-          throw new NotFoundException(`User with Id=${uid} could not be found`);
+          throw new NotFoundException(`User with Id=${id} could not be found`);
         }
       }),
     );
