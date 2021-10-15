@@ -21,7 +21,10 @@ export class UsersService {
     });
 
     user = await user.save();
-    return this.jwt.signAsync({ email: user.email }, { subject: user.id });
+    return this.jwt.signAsync(
+      { email: user.email, displayName: user.displayName },
+      { subject: user.id },
+    );
   }
 
   async findAll(): Promise<User[]> {

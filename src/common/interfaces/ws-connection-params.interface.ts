@@ -1,3 +1,3 @@
 export interface WsConnectionParams {
-  Authorization: string;
+  Authorization?: string;
 }

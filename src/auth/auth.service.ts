@@ -20,6 +20,9 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return this.jwt.signAsync({ email }, { subject: `${user.id}` });
+    return this.jwt.signAsync(
+      { email, displayName: user.displayName },
+      { subject: `${user.id}` },
+    );
   }
 }

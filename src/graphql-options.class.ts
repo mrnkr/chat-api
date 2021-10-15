@@ -1,5 +1,5 @@
 import { GqlOptionsFactory, GqlModuleOptions } from '@nestjs/graphql';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WsConnectionParams } from './common/interfaces/ws-connection-params.interface';
 
@@ -16,7 +16,12 @@ export class GraphqlOptions implements GqlOptionsFactory {
         'subscriptions-transport-ws': {
           path: '/api/graphql',
           onConnect: (connectionParams: WsConnectionParams) => {
-            const token = connectionParams.Authorization.split(' ').pop();
+            const authHeader = connectionParams.Authorization;
+            if (!authHeader?.startsWith('Bearer ')) {
+              throw new UnauthorizedException('Authentication required');
+            }
+
+            const token = authHeader.split(' ').pop();
             const { sub } = this.jwt.decode(token);
             return {
               currentUser: sub,
