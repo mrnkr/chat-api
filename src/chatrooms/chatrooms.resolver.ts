@@ -103,12 +103,11 @@ export class ChatroomsResolver {
       const chatroom = message.chatroom as Chatroom;
 
       return (
-        chatroom.id === variables.chatroomId &&
-        chatroom.canAccess(context.currentUser)
+        chatroom.id === variables.id && chatroom.canAccess(context.currentUser)
       );
     },
   })
-  messageReceived(@Args('chatroomId') chatroomId: string) {
+  messageReceived(@Args('id') chatroomId: string) {
     return this.pubSub.asyncIterator('messageReceived');
   }
 }

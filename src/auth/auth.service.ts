@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async login(email: string, password: string): Promise<string> {
-    const user = await this.UserModel.findOne({ where: { email } });
+    const user = await this.UserModel.findOne({ email });
     const passwordsMatch = await user?.checkPassword(password);
 
     if (!user || !passwordsMatch) {
