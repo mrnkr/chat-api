@@ -5,6 +5,7 @@ import { User } from '../users/user.entity';
 import { Chatroom } from './chatroom.entity';
 import { Message } from './message.entity';
 import { SendMessage } from './interfaces/send-message.interface';
+import { SetStatusForUser } from './interfaces/set-status-for-user.interface';
 
 @Injectable()
 export class ChatroomsService {
@@ -67,6 +68,24 @@ export class ChatroomsService {
 
     const message = new Message(data.messageBody, data.senderId);
     chatroom.addMessage(message);
+    chatroom = await chatroom.save();
+
+    return chatroom;
+  }
+
+  async setStatusForUser(data: SetStatusForUser): Promise<Chatroom> {
+    let chatroom = await this.ChatroomModel.findOne({
+      _id: data.chatroomId,
+      users: data.userId,
+    } as any);
+
+    if (!chatroom) {
+      throw new NotFoundException(
+        `Chatroom with id=${data.chatroomId} not found`,
+      );
+    }
+
+    chatroom.setStatusForUser(data.userId, data.status);
     chatroom = await chatroom.save();
 
     return chatroom;

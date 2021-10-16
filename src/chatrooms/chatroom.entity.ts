@@ -1,12 +1,23 @@
 import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
-import { isDocumentArray, modelOptions, prop, Ref } from '@typegoose/typegoose';
+import {
+  isDocumentArray,
+  modelOptions,
+  prop,
+  Ref,
+  mongoose,
+  Severity,
+} from '@typegoose/typegoose';
 import { User } from '../users/user.entity';
-import { useMongoosePlugins } from '../common/useMongoosePlugins';
+import { useMongoosePlugins } from '../common/use-mongoose-plugins.decorator';
 import { Message } from './message.entity';
+import { UserStatus } from './user-status.enum';
 
 @ObjectType()
 @useMongoosePlugins()
-@modelOptions({ schemaOptions: { timestamps: true } })
+@modelOptions({
+  schemaOptions: { timestamps: true },
+  options: { allowMixed: Severity.ALLOW },
+})
 export class Chatroom {
   @Field((type) => ID)
   id: string;
@@ -25,8 +36,12 @@ export class Chatroom {
   }
 
   @Field((type) => [User])
-  @prop({ ref: () => User, autopopulate: true })
+  @prop({ ref: () => User, autopopulate: true, index: true })
   users!: Ref<User>[];
+
+  @Field((type) => Object, { nullable: true })
+  @prop({ type: mongoose.Schema.Types.Mixed, default: {} })
+  status?: { [key: string]: UserStatus };
 
   @Field((type) => GraphQLISODateTime)
   createdAt: Date;
@@ -46,5 +61,13 @@ export class Chatroom {
     }
 
     return this.users.some((u) => u.id === userId);
+  }
+
+  setStatusForUser(userId: string, status: UserStatus): void {
+    if (!this.status) {
+      this.status = {};
+    }
+
+    this.status[userId] = status;
   }
 }

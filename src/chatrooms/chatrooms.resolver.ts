@@ -13,6 +13,8 @@ import { MessageReceivedSubscriptionVariables } from './interfaces/message-recei
 import { SubscriptionContext } from '../common/interfaces/subscription-context.interface';
 import { ChatroomUpdatedSubscriptionPayload } from './interfaces/chatroom-updated-subscription-payload.interface';
 import { MessageReceivedSubscriptionPayload } from './interfaces/message-received-subscription-payload.interface';
+import { SetStatusForUserDto } from './dto/set-status-for-user.dto';
+import { ChatroomUpdatedSubscriptionVariables } from '../chatrooms/interfaces/chatroom-updated-subscription-variables.interface';
 
 @Resolver((of) => Chatroom)
 export class ChatroomsResolver {
@@ -60,6 +62,23 @@ export class ChatroomsResolver {
   }
 
   @UseGuards(GqlAuthGuard)
+  @Mutation((returns) => Chatroom)
+  async setStatusForUser(
+    @Args('input') input: SetStatusForUserDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<Chatroom> {
+    const chatroom = await this.chatroomsService.setStatusForUser({
+      chatroomId: input.chatroomId,
+      userId: currentUser.id,
+      status: input.status,
+    });
+
+    this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
+
+    return chatroom;
+  }
+
+  @UseGuards(GqlAuthGuard)
   @Mutation((returns) => Message)
   async sendMessage(
     @Args('input') input: SendMessageDto,
@@ -82,14 +101,17 @@ export class ChatroomsResolver {
   @Subscription((returns) => Chatroom, {
     filter: (
       payload: ChatroomUpdatedSubscriptionPayload,
-      _,
+      variables: ChatroomUpdatedSubscriptionVariables,
       context: SubscriptionContext,
     ) => {
       const chatroom = payload.chatroomUpdated;
-      return chatroom.canAccess(context.currentUser);
+      variables.id ??= chatroom.id;
+      return (
+        variables.id === chatroom.id && chatroom.canAccess(context.currentUser)
+      );
     },
   })
-  chatroomUpdated() {
+  chatroomUpdated(@Args('id', { nullable: true }) chatroomId?: string) {
     return this.pubSub.asyncIterator('chatroomUpdated');
   }
 
