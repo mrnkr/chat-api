@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import jwtConfig from '../config/jwt.config';
+import { GraphQLJSONObject } from './graphql-json-object.scalar';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import jwtConfig from '../config/jwt.config';
       }),
     }),
   ],
+  providers: [GraphQLJSONObject],
   exports: [PassportModule, JwtModule],
 })
 @Global()

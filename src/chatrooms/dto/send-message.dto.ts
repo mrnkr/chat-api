@@ -1,9 +1,9 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class SendMessageDto {
-  @Field()
+  @Field((type) => ID)
   @IsMongoId()
   chatroomId: string;
 
