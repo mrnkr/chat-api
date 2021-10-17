@@ -34,4 +34,11 @@ export class UsersService {
   async findOneById(id: string): Promise<User> {
     return await this.UserModel.findById(id);
   }
+
+  async sendHeartbeat(id: string): Promise<User> {
+    let user = await this.UserModel.findById(id);
+    user.sendHeartbeat();
+    user = await user.save();
+    return user;
+  }
 }
