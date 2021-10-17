@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { modelOptions, prop, pre } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 
@@ -23,7 +23,21 @@ export class User {
   @prop()
   password: string;
 
+  @Field((type) => GraphQLISODateTime, { nullable: true })
+  @prop({ type: () => Date })
+  lastHeartbeatAt?: Date;
+
+  @Field((type) => GraphQLISODateTime)
+  createdAt: Date;
+
+  @Field((type) => GraphQLISODateTime)
+  updatedAt: Date;
+
   async checkPassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
+  }
+
+  sendHeartbeat(): void {
+    this.lastHeartbeatAt = new Date();
   }
 }

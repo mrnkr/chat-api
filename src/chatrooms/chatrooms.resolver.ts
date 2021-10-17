@@ -13,7 +13,7 @@ import { MessageReceivedSubscriptionVariables } from './interfaces/message-recei
 import { SubscriptionContext } from '../common/interfaces/subscription-context.interface';
 import { ChatroomUpdatedSubscriptionPayload } from './interfaces/chatroom-updated-subscription-payload.interface';
 import { MessageReceivedSubscriptionPayload } from './interfaces/message-received-subscription-payload.interface';
-import { SetStatusForUserDto } from './dto/set-status-for-user.dto';
+import { LogLastActivityForUserDto } from './dto/log-last-activity-for-user.dto';
 import { ChatroomUpdatedSubscriptionVariables } from '../chatrooms/interfaces/chatroom-updated-subscription-variables.interface';
 
 @Resolver((of) => Chatroom)
@@ -56,24 +56,23 @@ export class ChatroomsResolver {
       currentUser.id,
     ]);
 
-    this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
+    await this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
 
     return chatroom;
   }
 
   @UseGuards(GqlAuthGuard)
   @Mutation((returns) => Chatroom)
-  async setStatusForUser(
-    @Args('input') input: SetStatusForUserDto,
+  async logLastActivityForUser(
+    @Args('input') input: LogLastActivityForUserDto,
     @CurrentUser() currentUser: User,
   ): Promise<Chatroom> {
-    const chatroom = await this.chatroomsService.setStatusForUser({
+    const chatroom = await this.chatroomsService.logLastActivityForUser({
       chatroomId: input.chatroomId,
       userId: currentUser.id,
-      status: input.status,
     });
 
-    this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
+    await this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
 
     return chatroom;
   }
@@ -90,8 +89,8 @@ export class ChatroomsResolver {
       senderId: currentUser.id,
     });
 
-    this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
-    this.pubSub.publish('messageReceived', {
+    await this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
+    await this.pubSub.publish('messageReceived', {
       messageReceived: chatroom.lastMessage,
     });
 

@@ -2,6 +2,7 @@ import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { PubSub } from 'graphql-subscriptions';
 import jwtConfig from '../config/jwt.config';
 import { GraphQLJSONObject } from './graphql-json-object.scalar';
 
@@ -18,8 +19,14 @@ import { GraphQLJSONObject } from './graphql-json-object.scalar';
       }),
     }),
   ],
-  providers: [GraphQLJSONObject],
-  exports: [PassportModule, JwtModule],
+  providers: [
+    {
+      provide: PubSub,
+      useValue: new PubSub(),
+    },
+    GraphQLJSONObject,
+  ],
+  exports: [PassportModule, PubSub, JwtModule],
 })
 @Global()
 export class CommonModule {}

@@ -10,7 +10,6 @@ import {
 import { User } from '../users/user.entity';
 import { useMongoosePlugins } from '../common/use-mongoose-plugins.decorator';
 import { Message } from './message.entity';
-import { UserStatus } from './user-status.enum';
 
 @ObjectType()
 @useMongoosePlugins()
@@ -41,7 +40,7 @@ export class Chatroom {
 
   @Field((type) => Object, { nullable: true })
   @prop({ type: mongoose.Schema.Types.Mixed, default: {} })
-  status?: { [key: string]: UserStatus };
+  lastActivity?: { [key: string]: Date };
 
   @Field((type) => GraphQLISODateTime)
   createdAt: Date;
@@ -63,11 +62,11 @@ export class Chatroom {
     return this.users.some((u) => u.id === userId);
   }
 
-  setStatusForUser(userId: string, status: UserStatus): void {
-    if (!this.status) {
-      this.status = {};
+  logLastActivityForUser(userId: string): void {
+    if (!this.lastActivity) {
+      this.lastActivity = {};
     }
 
-    this.status[userId] = status;
+    this.lastActivity[userId] = new Date();
   }
 }

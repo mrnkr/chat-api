@@ -5,7 +5,7 @@ import { User } from '../users/user.entity';
 import { Chatroom } from './chatroom.entity';
 import { Message } from './message.entity';
 import { SendMessage } from './interfaces/send-message.interface';
-import { SetStatusForUser } from './interfaces/set-status-for-user.interface';
+import { LogLastActivityForUser } from './interfaces/log-last-activity-for-user.interface';
 
 @Injectable()
 export class ChatroomsService {
@@ -73,7 +73,9 @@ export class ChatroomsService {
     return chatroom;
   }
 
-  async setStatusForUser(data: SetStatusForUser): Promise<Chatroom> {
+  async logLastActivityForUser(
+    data: LogLastActivityForUser,
+  ): Promise<Chatroom> {
     let chatroom = await this.ChatroomModel.findOne({
       _id: data.chatroomId,
       users: data.userId,
@@ -85,7 +87,7 @@ export class ChatroomsService {
       );
     }
 
-    chatroom.setStatusForUser(data.userId, data.status);
+    chatroom.logLastActivityForUser(data.userId);
     chatroom = await chatroom.save();
 
     return chatroom;
