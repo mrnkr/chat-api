@@ -35,7 +35,7 @@ export class Chatroom {
   }
 
   @Field((type) => [User])
-  @prop({ ref: () => User, autopopulate: true, index: true })
+  @prop({ ref: () => User, autopopulate: true, unique: true })
   users!: Ref<User>[];
 
   @Field((type) => Object, { nullable: true })

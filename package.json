@@ -36,7 +36,6 @@
     "graphql": "^15.6.1",
     "graphql-subscriptions": "^1.2.1",
     "graphql-type-json": "^0.3.2",
-    "graphql-ws": "^5.5.0",
     "mongoose": "^6.0.10",
     "mongoose-autopopulate": "^0.16.0",
     "nestjs-typegoose": "^7.1.38",
