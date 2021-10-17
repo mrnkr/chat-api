@@ -20,6 +20,7 @@ export class UsersService {
       password: dto.password,
     });
 
+    await user.hashPassword();
     user = await user.save();
     return this.jwt.signAsync(
       { email: user.email, displayName: user.displayName },

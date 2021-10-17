@@ -6,6 +6,7 @@ import {
   Ref,
   mongoose,
   Severity,
+  index,
 } from '@typegoose/typegoose';
 import { User } from '../users/user.entity';
 import { useMongoosePlugins } from '../common/use-mongoose-plugins.decorator';
@@ -17,6 +18,7 @@ import { Message } from './message.entity';
   schemaOptions: { timestamps: true },
   options: { allowMixed: Severity.ALLOW },
 })
+@index({ 'users.0': 1, 'users.1': 1 }, { unique: true })
 export class Chatroom {
   @Field((type) => ID)
   id: string;
@@ -35,7 +37,7 @@ export class Chatroom {
   }
 
   @Field((type) => [User])
-  @prop({ ref: () => User, autopopulate: true, unique: true })
+  @prop({ ref: () => User, autopopulate: true })
   users!: Ref<User>[];
 
   @Field((type) => Object, { nullable: true })
