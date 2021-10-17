@@ -1,11 +1,7 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
-import { modelOptions, prop, pre } from '@typegoose/typegoose';
+import { modelOptions, prop } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 
-@pre<User>('save', async function hashPassword() {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-})
 @ObjectType()
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class User {
@@ -32,6 +28,11 @@ export class User {
 
   @Field((type) => GraphQLISODateTime)
   updatedAt: Date;
+
+  async hashPassword(): Promise<void> {
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
 
   async checkPassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
