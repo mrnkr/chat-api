@@ -15,6 +15,7 @@ import { ChatroomUpdatedSubscriptionPayload } from './interfaces/chatroom-update
 import { MessageReceivedSubscriptionPayload } from './interfaces/message-received-subscription-payload.interface';
 import { LogLastActivityForUserDto } from './dto/log-last-activity-for-user.dto';
 import { ChatroomUpdatedSubscriptionVariables } from '../chatrooms/interfaces/chatroom-updated-subscription-variables.interface';
+import { AddToChatroomDto } from './dto/add-to-chatroom.dto';
 
 @Resolver((of) => Chatroom)
 export class ChatroomsResolver {
@@ -55,6 +56,23 @@ export class ChatroomsResolver {
       userId,
       currentUser.id,
     ]);
+
+    await this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
+
+    return chatroom;
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation((returns) => Chatroom)
+  async addUserToChatroom(
+    @Args('input') { chatroomId, userId }: AddToChatroomDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<Chatroom> {
+    const chatroom = await this.chatroomsService.addUserToChatroom(
+      chatroomId,
+      userId,
+      currentUser,
+    );
 
     await this.pubSub.publish('chatroomUpdated', { chatroomUpdated: chatroom });
 

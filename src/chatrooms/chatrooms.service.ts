@@ -25,10 +25,25 @@ export class ChatroomsService {
     return chatroom;
   }
 
+  async addUserToChatroom(
+    chatroomId: string,
+    userId: string,
+    currentUser: User,
+  ): Promise<Chatroom> {
+    await this.assertUsersExist([userId]);
+    let chatroom = await this.ChatroomModel.findOne({
+      _id: chatroomId,
+      $and: [{ users: currentUser.id }, { users: { $ne: userId } }],
+    } as any);
+    chatroom.addToChatroom(userId);
+    chatroom = await chatroom.save();
+    return chatroom;
+  }
+
   private async assertUsersExist(userIds: string[]): Promise<void> {
     await Promise.all(
       userIds.map(async (id) => {
-        const user = await this.UserModel.findOne({ id });
+        const user = await this.UserModel.findById(id);
         if (!user) {
           throw new NotFoundException(`User with Id=${id} could not be found`);
         }

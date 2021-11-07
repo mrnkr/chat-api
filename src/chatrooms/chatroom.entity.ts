@@ -6,7 +6,6 @@ import {
   Ref,
   mongoose,
   Severity,
-  index,
 } from '@typegoose/typegoose';
 import { User } from '../users/user.entity';
 import { useMongoosePlugins } from '../common/use-mongoose-plugins.decorator';
@@ -18,10 +17,12 @@ import { Message } from './message.entity';
   schemaOptions: { timestamps: true },
   options: { allowMixed: Severity.ALLOW },
 })
-@index({ 'users.0': 1, 'users.1': 1 }, { unique: true })
 export class Chatroom {
   @Field((type) => ID)
   id: string;
+
+  @Field({ nullable: true })
+  name?: string;
 
   @Field((type) => [Message])
   @prop({ type: () => [Message], default: [] })
@@ -40,6 +41,11 @@ export class Chatroom {
   @prop({ ref: () => User, autopopulate: true })
   users!: Ref<User>[];
 
+  @Field({ defaultValue: false })
+  get isGroup(): boolean {
+    return this.users.length > 2;
+  }
+
   @Field((type) => Object, { nullable: true })
   @prop({ type: mongoose.Schema.Types.Mixed, default: {} })
   lastActivity?: { [key: string]: Date };
@@ -53,6 +59,10 @@ export class Chatroom {
   addMessage(message: Message): void {
     message.chatroom = this;
     this.messages.push(message);
+  }
+
+  addToChatroom(user: User | string): void {
+    this.users.push(user as any);
   }
 
   canAccess(userId: string): boolean {
