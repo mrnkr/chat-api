@@ -21,9 +21,6 @@ export class Chatroom {
   @Field((type) => ID)
   id: string;
 
-  @Field({ nullable: true })
-  name?: string;
-
   @Field((type) => [Message])
   @prop({ type: () => [Message], default: [] })
   messages!: Message[];
