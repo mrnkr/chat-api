@@ -12,7 +12,7 @@ export class SendMessageDto {
   @IsNotEmpty()
   messageBody: string;
 
-  @Field()
+  @Field({ nullable: true })
   @IsUrl()
   pictureUrl?: string;
 }
