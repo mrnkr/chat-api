@@ -1,5 +1,11 @@
 import { InputType, Field, ID } from '@nestjs/graphql';
-import { IsMongoId, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 @InputType()
 export class SendMessageDto {
@@ -14,5 +20,6 @@ export class SendMessageDto {
 
   @Field({ nullable: true })
   @IsUrl()
+  @IsOptional()
   pictureUrl?: string;
 }
