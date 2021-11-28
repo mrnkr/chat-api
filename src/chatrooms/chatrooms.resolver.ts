@@ -102,8 +102,7 @@ export class ChatroomsResolver {
     @CurrentUser() currentUser: User,
   ): Promise<Message> {
     const chatroom = await this.chatroomsService.sendMessageToChatroom({
-      chatroomId: input.chatroomId,
-      messageBody: input.messageBody,
+      ...input,
       senderId: currentUser.id,
     });
 

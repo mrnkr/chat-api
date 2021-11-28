@@ -81,7 +81,11 @@ export class ChatroomsService {
       );
     }
 
-    const message = new Message(data.messageBody, data.senderId);
+    const message = new Message(
+      data.senderId,
+      data.messageBody,
+      data.pictureUrl,
+    );
     chatroom.addMessage(message);
     chatroom = await chatroom.save();
 

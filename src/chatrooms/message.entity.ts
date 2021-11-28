@@ -13,6 +13,10 @@ export class Message {
   @prop()
   body: string;
 
+  @Field({ nullable: true })
+  @prop()
+  pictureUrl?: string;
+
   @Field((type) => ID)
   @prop({ ref: () => Chatroom })
   chatroom: Ref<Chatroom>;
@@ -27,8 +31,9 @@ export class Message {
   @Field((type) => GraphQLISODateTime)
   updatedAt?: Date;
 
-  constructor(body: string, senderId: string) {
+  constructor(senderId: string, body: string, pictureUrl?: string) {
     this.body = body;
+    this.pictureUrl = pictureUrl;
     this.sender = senderId as any;
   }
 }
